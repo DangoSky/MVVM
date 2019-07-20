@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+</head>
+
+<body>
+	<div id="app" v-model="og" v-text="goh" v-if="gjo" v-on="jog">
+		<input type="text" v-model="inputVal">
+		<p>{{inputVal}}</p>
+	</div>
+
+	<script>
+		function createFragment(node) {
+			let fragment = document.createDocumentFragment();
+			let child;
+			while(child = node.firstChild) {
+				fragment.appendChild(child);
+			}
+		}
+		let app = document.querySelector('#app');
+		// createFragment(app);
+		let nodeAttrs = app.attributes;
+		Array.prototype.slice.call(nodeAttrs).forEach((attr) => {
+			console.log(attr);
+			console.log(attr.name);
+			console.log(attr.value);
+		})
+	</script>
+</body>
+
+</html>
