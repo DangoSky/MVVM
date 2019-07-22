@@ -1,5 +1,5 @@
 function Observer(data) {
-
+	this.walk(data);
 }
 
 Observer.prototype = {
@@ -17,12 +17,14 @@ Observer.prototype = {
 			// configurable: false,
 			get() {
 				// return value;
+				return obj[key];
 			},
 			set(newVal) {
 				if(newVal === value) {
 					return;
 				}
-				value = newVal;
+				// value = newVal;
+				obj[key] = newVal;
 			}
 		})
 	}
