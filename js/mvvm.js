@@ -1,9 +1,10 @@
 function MVVM(options) {
 	this._data = options.data;
+	this.vm = this;
 	let el = options.el;
 	this.proxyData(this._data);
 	new Observer(this._data);
-	// new Compiler(el);
+	new Compiler(el, this.vm);
 }
 
 MVVM.prototype = {
@@ -28,5 +29,3 @@ MVVM.prototype = {
 		})
 	}
 }
-
-// test git

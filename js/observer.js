@@ -13,12 +13,10 @@ Observer.prototype = {
 	
 	// 数据劫持
 	defineReactive(obj, key, value) {
-		console.log(1);
 		Object.defineProperty(obj, key, {
 			enumerable: true,
 			configurable: false,
 			get() {
-				// return value;
 				return value;
 			},
 			set(newVal) {

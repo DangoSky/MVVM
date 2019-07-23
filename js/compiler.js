@@ -1,14 +1,17 @@
-function Compile(el) {
+function Compiler(el, vm) {
+	this.vm = vm;
 	// 确保el是DOM节点
-	this.el = this.isElementNode(el) ? el : document.querySelector(el);
+	this.el = el.nodeType === 1 ? el : document.querySelector(el);
 	if(this.el) {
 		// 将DOM节点转换为文档树，防止后续频繁操作DOM影响性能
 		this.fragment = this.nodeToFragment(this.el);
-		this.compileElement(this.fragment);
+		this.compileElement(this.fragment, this.vm);
+		// 把文档树挂载回DOM树
+		this.el.appendChild(this.fragment);
 	}
 }
 
-Compile.prototype = {
+Compiler.prototype = {
   nodeToFragment(node) {
 		let fragment = document.createDocumentFragment();
 		let child;
@@ -20,11 +23,11 @@ Compile.prototype = {
 	},
 
 	// 解析节点
-	compileElement(node) {
+	compileElement(node, vm) {
 		let childNodes = node.childNodes;
-		let reg = /\{\}().*)\}\}/;		// 匹配大括号
+		let reg = /\{\{(.*)\}\}/;		// 匹配大括号
 		[].slice.call(childNodes).forEach(child => {
-			let value = child.nodeValue;
+			let value = child.textContent;
 			// 元素节点
 			if(child.nodeType === 1) {
 				this.compileDirective(child);
@@ -34,12 +37,12 @@ Compile.prototype = {
 				// RegExp.$1获取第一个匹配到的字符串
 				// 但还需要考虑有多个大括号的情况。如：{{nodeVal}}{{hello}}
 				// {{}}和v-text是同一样的处理
-				compileUtil.text(child, RegExp.$1.trim());
+				compileUtil.text(child, vm, RegExp.$1.trim());
 			}
 			// todo，放到第一个if前面。
 			// 递归解析每一个子节点
-			if(child.childrenNodes && child.childrenNodes.length) {
-				this.compileElement(child);
+			if(child.childNodes && child.childNodes.length) {
+				this.compileElement(child, vm);
 			}
 		})
 	},
@@ -49,16 +52,16 @@ Compile.prototype = {
 		let nodeAttrs = node.attributes;
 		Array.prototype.slice.call(nodeAttrs).forEach((attr) => {
 			let attrName = attr.name;
-			if(judgeDirective(atttName)) {
-				let attrVal = attr.value;
+			if(this.judgeDirective(attrName)) {
 				let dirName = attrName.substring(2);
+				let attrVal = attr.value;
 				// v-on事件指令
 				if(dirName.indexOf('on') === 0) {
 					this.handleEvent(); 
 				}
 				// 非事件指令
 				else {
-
+					console.log("非事件指令");
 				}
 			}
 			
@@ -78,8 +81,8 @@ Compile.prototype = {
 
 // 处理各个指令
 let compileUtil = {
-	text(node, attrVal) {
-		this.bind(node, attrVal, 'text');
+	text(node, vm, attrVal) {
+		this.bind(node, vm, attrVal, 'text');
 	},
 	html() {
 
@@ -87,9 +90,9 @@ let compileUtil = {
 	model() {
 
 	},
-	bind(node, attrVal, dirName) {
+	bind(node, vm, attrVal, dirName) {
 		let updateFn = updater[dirName + 'Updater'];
-		// attrVal = this.getTextVal();
+		attrVal = this.getTextVal(vm, attrVal);
 		updateFn && updateFn(node, attrVal);
 	},
 	// 考虑到{{}}或v-text中有a.b.c这种嵌套的对象，所以需要一步步解析下去取值
