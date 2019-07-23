@@ -89,7 +89,17 @@ let compileUtil = {
 	},
 	bind(node, attrVal, dirName) {
 		let updateFn = updater[dirName + 'Updater'];
+		// attrVal = this.getTextVal();
 		updateFn && updateFn(node, attrVal);
+	},
+	// 考虑到{{}}或v-text中有a.b.c这种嵌套的对象，所以需要一步步解析下去取值
+	getTextVal(vm, attrVal) {
+		let res = vm;
+		attrVal = attrVal.split('.');
+		attrVal.forEach(key => {
+			res = res[key];
+		})
+		return res;
 	}
 }
 

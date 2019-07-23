@@ -1,5 +1,6 @@
 function Observer(data) {
-	this.walk(data);
+	this.data = data;
+	this.walk(this.data);
 }
 
 Observer.prototype = {
@@ -9,15 +10,16 @@ Observer.prototype = {
 			this.defineReactive(data, key, data[key]);
 		})
 	},
-
+	
 	// 数据劫持
 	defineReactive(obj, key, value) {
+		console.log(1);
 		Object.defineProperty(obj, key, {
 			enumerable: true,
-			// configurable: false,
+			configurable: false,
 			get() {
 				// return value;
-				return obj[key];
+				return value;
 			},
 			set(newVal) {
 				if(newVal === value) {
