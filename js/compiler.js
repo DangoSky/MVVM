@@ -30,7 +30,7 @@ Compiler.prototype = {
 			let value = child.textContent;
 			// 元素节点
 			if(child.nodeType === 1) {
-				this.compileDirective(child);
+				this.compileDirective(child, vm);
 			}
 			// 文本节点
 			else if(child.nodeType === 3 && reg.test(value)) {
@@ -48,7 +48,7 @@ Compiler.prototype = {
 	},
 
 	// 解析指令
-	compileDirective(node) {
+	compileDirective(node, vm) {
 		let nodeAttrs = node.attributes;
 		Array.prototype.slice.call(nodeAttrs).forEach((attr) => {
 			let attrName = attr.name;
@@ -59,9 +59,9 @@ Compiler.prototype = {
 				if(dirName.indexOf('on') === 0) {
 					this.handleEvent(); 
 				}
-				// 非事件指令
+				// 非事件指令,v-model、v-text等
 				else {
-					console.log("非事件指令");
+					compileUtil[dirName] && compileUtil[dirName](node, vm, attrVal);
 				}
 			}
 			
@@ -87,8 +87,25 @@ let compileUtil = {
 	html() {
 
 	},
-	model() {
-
+	model(node, vm, attrVal) {
+		this.bind(node, vm, attrVal, 'model');
+		let curVal = this.getTextVal(vm, attrVal);
+		node.addEventListener('input', (e) => {
+			let newVal = e.target.value;
+			if(newVal === curVal)  return;
+			let res = vm;
+			let targetData = attrVal.split('.');
+			targetData.forEach((key, index) => {
+				// 不能直接res=res[key]取到最终的data属性，若res直接取到最终属性对应的值(string类型)，修改的时候不会改变到vm里相应的属性值
+				if(index < targetData.length - 1) {
+					res = res[key];
+				}
+				else {
+					res[key] = newVal;
+				}
+			})
+			curVal = newVal;
+		})
 	},
 	bind(node, vm, attrVal, dirName) {
 		let updateFn = updater[dirName + 'Updater'];
@@ -110,5 +127,8 @@ let compileUtil = {
 let updater = {
 	textUpdater(node, attrVal) {
 		node.textContent = attrVal;
+	},
+	modelUpdater(node, attrVal) {
+		node.value = attrVal;
 	}
 }
