@@ -11,7 +11,9 @@
 <body>
 	<div id="app">
 		<input type="text" v-model="inputVal">
+		<button v-on:click="handleClick">Click Me!</button>
 		<p>{{inputVal}}</p>
+		<p v-text="vText"></p>
 	</div>
 
 	<script src="./js/compiler.js"></script>
@@ -22,7 +24,13 @@
 		let vm = new MVVM({
 			el: '#app',
 			data: {
-				inputVal: 'Hello World'
+				inputVal: 'Hello World',
+				vText: '这是v-text的指令解析'
+			},
+			method: {
+				handleClick() {
+					alert("解析事件指令");
+				}
 			}
 		})
 	</script>

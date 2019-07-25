@@ -26,6 +26,7 @@ Compiler.prototype = {
 	compileElement(node, vm) {
 		let childNodes = node.childNodes;
 		let reg = /\{\{(.*)\}\}/;		// 匹配大括号
+		// 遍历所有子节点
 		[].slice.call(childNodes).forEach(child => {
 			let value = child.textContent;
 			// 元素节点
@@ -39,7 +40,6 @@ Compiler.prototype = {
 				// {{}}和v-text是同一样的处理
 				compileUtil.text(child, vm, RegExp.$1.trim());
 			}
-			// todo，放到第一个if前面。
 			// 递归解析每一个子节点
 			if(child.childNodes && child.childNodes.length) {
 				this.compileElement(child, vm);
@@ -50,6 +50,7 @@ Compiler.prototype = {
 	// 解析指令
 	compileDirective(node, vm) {
 		let nodeAttrs = node.attributes;
+		// 遍历元素节点上的所有属性
 		Array.prototype.slice.call(nodeAttrs).forEach((attr) => {
 			let attrName = attr.name;
 			if(this.judgeDirective(attrName)) {
@@ -57,14 +58,15 @@ Compiler.prototype = {
 				let attrVal = attr.value;
 				// v-on事件指令
 				if(dirName.indexOf('on') === 0) {
-					this.handleEvent(); 
+					this.handleEvent(node, vm, attrVal, dirName); 
 				}
 				// 非事件指令,v-model、v-text等
 				else {
 					compileUtil[dirName] && compileUtil[dirName](node, vm, attrVal);
 				}
+				// 指令解析完毕后移除指令属性
+				node.removeAttribute(attrName);
 			}
-			
 		})
 	},
 
@@ -73,9 +75,14 @@ Compiler.prototype = {
 		return attr.indexOf('v-') === 0;
 	},
 
-	//
-	handleEvent() {
-		console.log("handle event");
+	// 处理事件指令
+	handleEvent(node, vm, fnName, dirName) {
+		let eventName = dirName.split(":")[1];
+		let fn = vm.options.method && vm.options.method[fnName];
+		// 给该元素绑定相应的事件处理函数
+		if(eventName && fn) {
+			node.addEventListener(eventName, fn.bind(vm));
+		}
 	}
 };
 
@@ -90,6 +97,7 @@ let compileUtil = {
 	model(node, vm, attrVal) {
 		this.bind(node, vm, attrVal, 'model');
 		let curVal = this.getTextVal(vm, attrVal);
+		// 监听input，变化的时候就随之改变vm中相应的数据
 		node.addEventListener('input', (e) => {
 			let newVal = e.target.value;
 			if(newVal === curVal)  return;

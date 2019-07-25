@@ -1,10 +1,13 @@
 function MVVM(options) {
+	// vue实例的data
 	this._data = options.data;
-	this.vm = this;
+	// vue实例的各个属性，data、method等
+	this.options = options;
+	// vue实例挂载的元素
 	let el = options.el;
 	this.proxyData(this._data);
 	new Observer(this._data);
-	new Compiler(el, this.vm);
+	new Compiler(el, this);
 }
 
 MVVM.prototype = {
