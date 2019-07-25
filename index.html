@@ -6,6 +6,11 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>Document</title>
+	<style>
+		.text {
+			color: lightgreen;
+		}
+	</style>
 </head>
 
 <body>
@@ -14,6 +19,8 @@
 		<button v-on:click="handleClick">Click Me!</button>
 		<p>{{inputVal}}</p>
 		<p v-text="vText"></p>
+		<p class="a" v-class="myStyle">这是v-class的指令解析</p>
+		<p v-html="vHTML"></p>
 	</div>
 
 	<script src="./js/compiler.js"></script>
@@ -25,7 +32,9 @@
 			el: '#app',
 			data: {
 				inputVal: 'Hello World',
-				vText: '这是v-text的指令解析'
+				vText: '这是v-text的指令解析',
+				myStyle: 'text',
+				vHTML: '<span style="color: blue">这是v-html的指令解析</span>'
 			},
 			method: {
 				handleClick() {

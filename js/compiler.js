@@ -91,8 +91,11 @@ let compileUtil = {
 	text(node, vm, attrVal) {
 		this.bind(node, vm, attrVal, 'text');
 	},
-	html() {
-
+	html(node, vm, attrVal) {
+		this.bind(node, vm, attrVal, 'html');
+	},
+	class(node, vm, attrVal) {
+		this.bind(node, vm, attrVal, 'class');
 	},
 	model(node, vm, attrVal) {
 		this.bind(node, vm, attrVal, 'model');
@@ -138,5 +141,14 @@ let updater = {
 	},
 	modelUpdater(node, attrVal) {
 		node.value = attrVal;
+	},
+	classUpdater(node, attrVal) {
+		let className = node.className;
+		// 如果该元素已经设置有class，则多个class之间需要以空格间隔开
+		let haveSpace = (className && attrVal) ? ' ' : '';
+		node.className = className + haveSpace + attrVal;
+	},
+	htmlUpdater(node, attrVal) {
+		node.innerHTML = attrVal;
 	}
 }
