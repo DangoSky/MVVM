@@ -122,15 +122,10 @@ let compileUtil = {
 		let updateFn = updater[dirName + 'Updater'];
 		attrVal = this.getTextVal(vm, attrVal);
 		updateFn && updateFn(node, attrVal);
-
-		// updaterFn && updaterFn(node, this._getVMVal(vm, exp));
-		// new Watcher(vm, exp, function (value, oldValue) {
-		// 	updaterFn && updaterFn(node, value, oldValue);
-		// });
 		
 		// 每个指令对应一个watcher，当表达式中对应的值改变时触发watcher的回调函数来更新视图
-		new Watcher(vm, attrVal, function() {
-			updateFn && updateFn(node, attrVal);
+		new Watcher(vm, attrVal, function(curVal) {
+			updateFn && updateFn(node, curVal);
 		})
 	},
 	// 考虑到{{}}或v-text中有a.b.c这种嵌套的对象，所以需要一步步解析下去取值
