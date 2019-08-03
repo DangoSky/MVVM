@@ -29,7 +29,7 @@ Observer.prototype = {
 				// 解析指令时，需要为指令对应的每个数据的dep添加watcher，此时Dep.target为该watcher
 				if(Dep.target) {
 					// 先回到watcher中，把这个dep添加到Dep.target的depIds中，之后再回来
-					Dep.target.addDep(this);
+					Dep.target.addDep(dep);
 				}
 				return curVal;
 			},

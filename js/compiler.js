@@ -120,8 +120,8 @@ let compileUtil = {
 	},
 	bind(node, vm, attrVal, dirName) {
 		let updateFn = updater[dirName + 'Updater'];
-		attrVal = this.getTextVal(vm, attrVal);
-		updateFn && updateFn(node, attrVal);
+		let val = this.getTextVal(vm, attrVal);
+		updateFn && updateFn(node, val);
 		
 		// 每个指令对应一个watcher，当表达式中对应的值改变时触发watcher的回调函数来更新视图
 		new Watcher(vm, attrVal, function(curVal) {

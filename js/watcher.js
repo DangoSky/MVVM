@@ -13,13 +13,13 @@ Watcher.prototype = {
     Dep.target = this;
     // parseVal只是为了触发指令对应的那些数据的get，从而把这个watcher添加到数据的dep中
     // 注意是那些数据，因为一个指令可能使用到了多个数据，比如a.b.c，这时watcher需要都添加到这三个dep中
-    let value = parseVal(this.attrVal);
+    let value = this.parseVal(this, this.attrVal);
     Dep.target = null;
     return value;
   },
   
   // 获取指令对应的那个数据
-  parseVal(attrVal) {
+  parseVal(test, attrVal) {
     let res = this.vm;
     let exps = attrVal.split('.');
     // 会调用到属性的get，从而将watcher添加到每个属性的dep中，例如a.b.c
@@ -34,9 +34,9 @@ Watcher.prototype = {
   // 把dep传过来添加到watcher的depIds中，并把watcher传回去添加到dep的subs中
   addDep(dep) {
     // 如果该dep已经在watcher的depIds中，则不再重复添加
-    if(!this.depIds.hasOwnproperty(dep.id)) {
+    if(!this.depIds.hasOwnProperty(dep.id)) {
       dep.addSub(this);
-      this.depIds[dep.id] = tdep;
+      this.depIds[dep.id] = dep;
     }
   },
 
