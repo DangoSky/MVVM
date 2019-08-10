@@ -15,12 +15,32 @@
 
 <body>
 	<div id="app">
+		<h2>v-model的数据绑定</h2>
 		<input type="text" v-model="inputVal">
-		<button v-on:click="handleClick">Click Me!</button>
+		<input type="text" v-model="inputVal">
 		<p>{{inputVal}}</p>
+		<p v-text="inputVal"></p>
+		<button v-on:click="changeInputVal">点击修改inputVal</button>
+		
+		<p>{{inputVal}} {{vText}}</p>
+		<h2>多个大括号的解析</h2>
+		<!-- 多个大括号不能在同一个标签里面使用，需要包裹在不同的标签里才能正确解析 -->
+		<p>{{inputVal}}{{vText}}</p>
+		<p>
+			<span>{{inputVal}} </span>
+			<span>{{inputVal}}</span>
+		</p>
+		
+		<h2>嵌套多层对象如obj.parent.child的数据绑定</h2>
+		<input type="text" v-model="obj.parent.child">
+		<p>{{obj.parent.child}}</p>
+		
+		<h2>其余指令的解析</h2>
 		<p v-text="vText"></p>
 		<p class="a" v-class="myStyle">这是v-class的指令解析</p>
 		<p v-html="vHTML"></p>
+		<button v-on:click="handleClick">Click Me!</button>
+		
 	</div>
 
 	<script src="./js/compiler.js"></script>
@@ -34,11 +54,20 @@
 				inputVal: 'Hello World',
 				vText: '这是v-text的指令解析',
 				myStyle: 'text',
-				vHTML: '<span style="color: blue">这是v-html的指令解析</span>'
+				vHTML: '<span style="color: blue">这是v-html的指令解析</span>',
+				obj: {
+					parent: {
+						child: 123
+					}
+				}
 			},
 			method: {
 				handleClick() {
-					alert("解析事件指令");
+					alert("这是v-on:click事件指令的解析");
+				},
+				changeInputVal() {
+					console.log(this.inputVal);
+					this.inputVal = "成功修改了inputVal";
 				}
 			}
 		})

@@ -36,7 +36,6 @@ Compiler.prototype = {
 			// 文本节点
 			else if(child.nodeType === 3 && reg.test(value)) {
 				// RegExp.$1获取第一个匹配到的字符串
-				// 但还需要考虑有多个大括号的情况。如：{{nodeVal}}{{hello}}
 				// {{}}和v-text是同一样的处理
 				compileUtil.text(child, vm, RegExp.$1.trim());
 			}
